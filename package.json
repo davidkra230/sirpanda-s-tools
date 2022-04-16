@@ -1,0 +1,38 @@
+{
+  "name": "multiutil",
+  "version": "1.0.0",
+  "description": "bot",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "start:dev": "ts-node-dev index.ts",
+    "start:prod": "node build/index.js",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start:tscdev": "tsc -w && ts-node-dev index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidkra230/multiutil.git"
+  },
+  "keywords": [
+    "bot"
+  ],
+  "author": "davidkra230#7973",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/davidkra230/multiutil/issues"
+  },
+  "homepage": "https://github.com/davidkra230/multiutil#readme",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "discordx": "^9.5.2",
+    "dotenv": "^16.0.0",
+    "reflect-metadata": "^0.1.13",
+    "simple-json-db": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.24",
+    "typescript": "^4.6.3"
+  }
+}

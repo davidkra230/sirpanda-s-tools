@@ -7,6 +7,7 @@
     "start": "ts-node index.ts",
     "start:dev": "ts-node-dev index.ts",
     "start:prod": "node build/index.js",
+    "start:proddev": "node-dev build/index.js",
     "build": "tsc",
     "watch": "tsc -w",
     "start:tscdev": "tsc -w && ts-node-dev index.ts"
@@ -28,8 +29,10 @@
     "discord.js": "^13.6.0",
     "discordx": "^9.5.2",
     "dotenv": "^16.0.0",
+    "node-dev": "^7.4.2",
     "reflect-metadata": "^0.1.13",
-    "simple-json-db": "^2.0.0"
+    "simple-json-db": "^2.0.0",
+    "ts-node-dev": "^1.1.8"
   },
   "devDependencies": {
     "@types/node": "^17.0.24",

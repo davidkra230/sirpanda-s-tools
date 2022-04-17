@@ -40,28 +40,40 @@ bot.on(`messageCreate`, (message: Message) => {
         var prefix = db.get(message.guild.id).prefix;
     } catch (error) {
         //if there is an error set the prefix to "!"
-        db.set(`${message.guild.id}."prefix"`, db.get("prefix"));
+        db.set(message.guild.id, {prefix: db.get("prefix")});
         //get the prefix from the db
-        var prefix = db.get("prefix");
+        var prefix = db.get(message.guild.id).prefix;
     }
-    var prefix = db.get(message.guild.id).prefix || db.get("prefix");
     //if the message starts with the prefix specific to the one for the guild id or the ping of the bot 
-    if (message.content.startsWith(db.get("prefix") || `<@${bot.user.id}>`)) {
-        //try to require the command file and pass everything as arguments
+    if (message.content.startsWith(prefix || `<@${bot.user.id}>`)) {
+        //check if the command exists in the commands folder by trying to require it
+        //and if the user has the permission to use the command or is a maintainer then run the command
         try {
-            //check if the user does not have the required permissions to use the command
-            if (!require(".\\commands\\" + message.content.split(" ")[0].substring(1) + ".js").permissions.includes(message.member.permissions.toArray()) || require(message.content.split(" ")[0].substring(1) + ".js").permissions !== "ALL" || !db.get("maintainers").includes(message.author.id)) {
-                //send a message to the channel that the user does not have the required permissions
-                message.channel.send(`You don't have the required permissions to use this command!`);
-                //return to stop the rest of the code from running
+
+            //check if the command is in the commands folder
+            var command = require(`./commands/${message.content.split(" ")[0].slice(prefix.length).toLowerCase()}.js`);
+            //check if the command has maintener required permissions
+            if (command.permissions.includes("MAINTAINERS")) {
+                //if the user is not a maintainer then return
+                if (db.get("maintainers").includes(message.member.id)) return;
                 return;
-            };
-            //otherwise require the command file and pass everything as arguments
-            require(".\\commands\\" + message.content.split(" ")[0].substring(1) + ".js").run(bot, message, db);
+            }
+            //check if the user has the permission to use the command
+            if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.get("maintainers").includes(message.author.id)) {
+                //run the command
+                command.run(bot, message, db);
             
+            } else {
+                //send a message to the channel that the user does not have the permission to use the command
+                message.channel.send(`You do not have the permission to use this command!\nYou need the following permissions: ${command.permissions.join(", ")}\nYou have the following permissions: ${message.member.permissions.toArray().join(", ")}`);
+            }
         } catch (error) {
-            //if there is an error tell the user that the command is not found and tell them to use the help command
-            message.channel.send(`Command not found. Use \`${prefix}help\` to see a list of commands.\nOriginal error: ${error}`);
-        }}});
+            //send a message to the channel that the command does not exist
+            message.channel.send(`The command ${message.content.split(" ")[0].slice(1).toLowerCase()} does not exist or an error occured!`);
+        }
+
+    }
+});
+
 //this logs the bot in
 bot.login(process.env.TOKEN);

@@ -20,7 +20,11 @@ const bot = new Discord.Client({
     //set all the intents with bitfield
     intents: new Intents(32767),
     //makes the bot not silent
-    silent: false
+    silent: false,
+    //allow mentions to none
+    allowedMentions: {
+        users: []
+    }
 });
 
 //print something when the bot is ready and sets the activity and activity type to the one in the db
@@ -34,6 +38,8 @@ bot.on(`ready`, () => {
 
 //when a message is received it checks if the message is a command
 bot.on(`messageCreate`, (message: Message) => {
+    //print the message
+    console.log(`something happened: ${message.content}`);
     //calculate prefix within a try catch block
     try {
         //get the prefix from the db
@@ -69,7 +75,7 @@ bot.on(`messageCreate`, (message: Message) => {
             }
         } catch (error) {
             //send a message to the channel that the command does not exist
-            message.channel.send(`The command ${message.content.split(" ")[0].slice(1).toLowerCase()} does not exist or an error occured!`);
+            message.channel.send(`The command ${message.content.split(" ")[0].slice(1).toLowerCase()} does not exist or an error occured!\nthe error: ${error}`);
         }
 
     }

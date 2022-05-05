@@ -8,7 +8,7 @@ exports.description = "get help";
 exports.permissions = ["ALL"];
 
 //run function
-exports.run = (bot:any, message:any, args:any, db:any) => {
+exports.run = (bot, message, db) => {
     //define embed
     var embed = new MessageEmbed();
     //array to hold the commands

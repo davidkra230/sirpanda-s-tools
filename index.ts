@@ -76,7 +76,7 @@ bot.on(`messageCreate`, (message: Message) => {
         } catch (error:any) {
             //send a message to the channel that the command does not exist
           if (error.toString().startsWith("Error: Cannot find module") == true) {console.log(error); return};
-            message.channel.send(`error: ${error}`);
+            message.channel.send(`error:\n${error}\n(report this to david!)`);
         }
 
     }

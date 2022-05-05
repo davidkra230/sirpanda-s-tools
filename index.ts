@@ -71,15 +71,16 @@ bot.on(`messageCreate`, (message: Message) => {
             
             } else {
                 //send a message to the channel that the user does not have the permission to use the command
-                message.channel.send(`You do not have the permission to use this command!\nYou need the following permissions: ${command.permissions.join(", ")}\nYou have the following permissions: ${message.member.permissions.toArray().join(", ")}`);
+                message.channel.send(`You do not have the permission to use this command!\nYou need the following permissions: ${command.permissions.join(", ")}`);
             }
-        } catch (error) {
+        } catch (error:any) {
             //send a message to the channel that the command does not exist
-            message.channel.send(`The command ${message.content.split(" ")[0].slice(1).toLowerCase()} does not exist or an error occured!\nthe error: ${error}`);
+          if (error.toString().startsWith("Error: Cannot find module") == true) {console.log(error); return};
+            message.channel.send(`error: ${error}`);
         }
 
     }
 });
 
 //this logs the bot in
-bot.login(process.env.TOKEN);
+bot.login(process.env['token'] || process.env.TOKEN);

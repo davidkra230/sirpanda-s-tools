@@ -27,7 +27,7 @@ exports.run = (bot:any, message:any, args:any, db:any) => {
     //and for all the commands
     for (let cmd of cmds) {
         //add fields to the embed
-        embed.addFields({ name: cmd, value: require(`${__dirname}\\${cmd}.js`).description });
+        embed.addFields({ name: cmd, value: require(`${__dirname}/${cmd}.js`).description });
     };  
     //reply with the embed
     message.reply({embeds: [embed]});

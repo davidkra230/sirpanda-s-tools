@@ -5,7 +5,7 @@
 //import the discordx library
 import * as Discord from "discordx";
 //import message and intents from discord.js
-import { Message, Intents } from "discord.js";
+import { Message, Intents, Client } from "discord.js";
 //require dotenv
 require("dotenv").config();
 //require the json db
@@ -30,34 +30,46 @@ const bot = new Discord.Client({
 //print something when the bot is ready and sets the activity and activity type to the one in the db
 bot.on(`ready`, () => {
     console.log(`Ready as: ` + bot.user.tag + `!`);
+    //start web interface
+    require("./webserver/server.js").server(bot);
+    //sets the prefix to "!"
+    if (!db.get("botconfig").prefix) {
+        db.set("botconfig", {"prefix": "!"});
+    }
     //set the activity and activity type to the one in the db or default to playing and "bots be like:" if there is no activity in the db
-    bot.user.setActivity(db.get("activity") || "bots be like:", { type: db.get("activityType") || "PLAYING" });
-    //also sets the prefix to "!"
-    db.set("prefix", "!");
+    try {
+    bot.user.setActivity(db.get("botconfig").activity, { type: db.get("botconfig").activityType});
+    } catch (error) {
+        db.set("botconfig", { activity: "bots be like:", activityType: "PLAYING" });
+        bot.user.setActivity(db.get("botconfig").activity, { type: db.get("botconfig").activityType});
+    }
 });
 
 //when a message is received it checks if the message is a command
 bot.on(`messageCreate`, (message: Message) => {
     //print the message
     console.log(`something happened: ${message.content}`);
-    //calculate prefix within a try catch block
-    try {
+    
         //get the prefix from the db
-        var prefix = db.get(message.guild.id).prefix;
-    } catch (error) {
-        //if there is an error set the prefix to "!"
-        db.set(message.guild.id, {prefix: db.get("prefix")});
-        //get the prefix from the db
-        var prefix = db.get(message.guild.id).prefix;
-    }
+        var prefix = db.get("servers")[message.guild.id].prefix;
+        if (!prefix) {
+                //if there is an error set the prefix to "!"
+                db.set("servers", {[message.guild.id]: {prefix: db.get("botconfig").prefix}});
+                //get the prefix from the db
+                var prefix = db.get("servers")[message.guild.id].prefix;
+            }
     //if the message starts with the prefix specific to the one for the guild id or the ping of the bot 
-    if (message.content.startsWith(prefix || `<@${bot.user.id}>`)) {
+    if (message.content.startsWith(prefix) || message.content.startsWith(`<@${bot.user.id}>`)) {
+            //if the prefix is same as the ping of the bot
+            if (message.content.startsWith(prefix)) {var cprefix = `${prefix}`;}
+            if (message.content.startsWith(`<@${bot.user.id}>`)) {var cprefix = `<@${bot.user.id}>`;}
+        console.log(`prefix: ${cprefix}`);
         //check if the command exists in the commands folder by trying to require it
         //and if the user has the permission to use the command or is a maintainer then run the command
         try {
 
             //check if the command is in the commands folder
-            var command = require(`./commands/${message.content.split(" ")[0].slice(prefix.length).toLowerCase()}.js`);
+            var command = require(`./commands/${message.content.split(" ")[0].slice(`${cprefix}`.length).toLowerCase()}.js`);
             //check if the command has maintener required permissions
             if (command.permissions.includes("MAINTAINERS")) {
                 //if the user is not a maintainer then return
@@ -81,6 +93,5 @@ bot.on(`messageCreate`, (message: Message) => {
 
     }
 });
-
 //this logs the bot in
 bot.login(process.env['token'] || process.env.TOKEN);

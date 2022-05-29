@@ -1,7 +1,7 @@
 //define fs
 var fs = require('fs');
 //define discord.js
-const { MessageEmbed } = require('discord.js');
+var { MessageEmbed } = require('discord.js');
 //set description
 exports.description = "get help";
 //set permissions

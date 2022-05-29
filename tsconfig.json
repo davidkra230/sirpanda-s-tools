@@ -8,11 +8,11 @@
     "outDir": "build",
     "emitDecoratorMetadata": true, // required
     "experimentalDecorators": true, // required
-    "declaration": false,
+    "declaration": true,
     "importHelpers": true, // required
     "forceConsistentCasingInFileNames": true,
     "lib": ["ES2021", "esnext.asynciterable"],
     "moduleResolution": "node"
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/*.d.ts"]
 }

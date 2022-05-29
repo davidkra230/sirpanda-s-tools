@@ -33,16 +33,14 @@ bot.on(`ready`, () => {
     //start web interface
     require("./webserver/server.js").server(bot);
     //sets the prefix to "!"
-    if (!db.get("botconfig").prefix) {
+    if (db.get("botconfig").prefix == undefined) {
         db.set("botconfig", {"prefix": "!"});
     }
     //set the activity and activity type to the one in the db or default to playing and "bots be like:" if there is no activity in the db
-    try {
-    bot.user.setActivity(db.get("botconfig").activity, { type: db.get("botconfig").activityType});
-    } catch (error) {
-        db.set("botconfig", { activity: "bots be like:", activityType: "PLAYING" });
+        if (db.has("botconfig").activity == undefined || db.get("botconfig").activityType == undefined) {
+        db.set("botconfig", { [db.get("botconfig")]: [db.get("botconfig")], activity: "bots be like:", activityType: "PLAYING" });
         bot.user.setActivity(db.get("botconfig").activity, { type: db.get("botconfig").activityType});
-    }
+        }
 });
 
 //when a message is received it checks if the message is a command

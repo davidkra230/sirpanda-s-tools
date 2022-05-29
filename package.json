@@ -30,7 +30,6 @@
     "discord.js": "^13.6.0",
     "discordx": "^9.5.3",
     "dotenv": "^16.0.0",
-    "node": "^17.7.2",
     "node-dev": "^7.4.3",
     "reflect-metadata": "^0.1.13",
     "simple-json-db": "^2.0.0",

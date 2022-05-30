@@ -13,7 +13,7 @@ export function server(bot) {
     //the single route
     app.get('/*', (req, res) => {
         //send the response
-        res.send(`running as: ${bot.user.tag}`);
+        res.send(`running as: ${bot.user.tag}<br><a href="https://discord.com/api/oauth2/authorize?client_id=727368613144821802&permissions=8&scope=bot%20applications.commands">add to server<\a>`);
     }
 );
     //start the server

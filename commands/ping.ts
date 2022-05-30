@@ -11,7 +11,6 @@ exports.run = (bot, message, db) => {
     //send a message to the channel that the bot is pinging with the latency
     embed.setTitle("Pong! :ping_pong:");
     embed.setDescription(`Latency: ${bot.ws.ping}ms`);
-    embed.footer.text = `Requested by <@${message.author.id}>`;
-    embed.footer.icon_url = message.author.avatarURL();
+    embed.footer = { text: `Requested by <@${message.author.id}>`, icon_url: message.author.avatarURL() };
     message.reply({embeds: [embed]});
 };

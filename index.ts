@@ -1,4 +1,4 @@
-//a bot for discord written in typescript using the discordx library with a web interface
+//a bot for discord written in typescript using the discordx library with a web... nah, not much at least.
 //dotenv is used to store the token in a .env file
 //the bot uses simple-json-db to store the data
 
@@ -14,7 +14,7 @@ var jsondb = require("simple-json-db");
 var db = new jsondb("./data.json");
 //import reflect-metadata
 import "reflect-metadata";
-
+//import the discordx library
 //create the bot and pass the options
 const bot = new Discord.Client({
     //set all the intents with bitfield
@@ -32,30 +32,53 @@ bot.on(`ready`, () => {
     console.log(`Ready as: ` + bot.user.tag + `!`);
     //start web interface
     require("./webserver/server.js").server(bot);
+    //no botconfig?
+    if (!db.has("botconfig")) {
+        //create.
+        db.set("botconfig", {})
+    }
+        
     //sets the prefix to "!"
-    if (db.get("botconfig").prefix == undefined) {
+    if (!db.has("botconfig").prefix) {
         db.set("botconfig", {"prefix": "!"});
     }
     //set the activity and activity type to the one in the db or default to playing and "bots be like:" if there is no activity in the db
         if (db.has("botconfig").activity == undefined || db.get("botconfig").activityType == undefined) {
-        db.set("botconfig", { [db.get("botconfig")]: [db.get("botconfig")], activity: "bots be like:", activityType: "PLAYING" });
+        var data = db.JSON()
+        data.botconfig.activity = "bots be like:";
+        data.botconfig.activityType = "PLAYING";
+        db.JSON(data);
+        db.sync();
         bot.user.setActivity(db.get("botconfig").activity, { type: db.get("botconfig").activityType});
         }
-});
+        //maintainers
+        if (!db.get("botconfig").maintainers == undefined) {return}
+            var data = db.JSON();
+            data.botconfig.maintainers = [];
+            data.botconfig.maintainers.push("652699312631054356");
+            db.JSON(data);
+            db.sync();
+}
+);
 
 //when a message is received it checks if the message is a command
 bot.on(`messageCreate`, (message: Message) => {
     //print the message
     console.log(`something happened: ${message.content}`);
-    
+        var data = db.JSON();
         //get the prefix from the db
-        var prefix = db.get("servers")[message.guild.id].prefix;
-        if (!prefix) {
+        //var prefix = data[message.guild.id].prefix;
+        console.log(db.get("servers")[message.guild.id].prefix);
+        if (db.get("servers")[message.guild.id].prefix == undefined) {
+                console.log("prefix is undefined");
                 //if there is an error set the prefix to "!"
-                db.set("servers", {[message.guild.id]: {prefix: db.get("botconfig").prefix}});
+                if (!db.has("servers")[message.guild.id]) {
+                    db.set("servers", {[message.guild.id]: {}});
+                }
+            }
+                db.set("servers", {[message.guild.id]: {"prefix": db.get("botconfig").prefix}}) 
                 //get the prefix from the db
                 var prefix = db.get("servers")[message.guild.id].prefix;
-            }
     //if the message starts with the prefix specific to the one for the guild id or the ping of the bot 
     if (message.content.startsWith(prefix) || message.content.startsWith(`<@${bot.user.id}>`)) {
             //if the prefix is same as the ping of the bot
@@ -69,13 +92,7 @@ bot.on(`messageCreate`, (message: Message) => {
             //check if the command is in the commands folder
             var command = require(`./commands/${message.content.split(" ")[0].slice(`${cprefix}`.length).toLowerCase()}.js`);
             //check if the command has maintener required permissions
-            if (command.permissions.includes("MAINTAINERS")) {
-                //if the user is not a maintainer then return
-                if (db.get("maintainers").includes(message.member.id)) return;
-                return;
-            }
-            //check if the user has the permission to use the command
-            if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.get("maintainers").includes(message.author.id)) {
+             if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.get("botconfig").maintainers.join().includes(message.author.id.toString())) {
                 //run the command
                 command.run(bot, message, db);
             

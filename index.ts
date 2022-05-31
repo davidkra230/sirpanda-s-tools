@@ -71,14 +71,14 @@ bot.on(`messageCreate`, (message: Message) => {
         try {
         if (db.get("servers").message.guild.id == undefined) {
             data = db.JSON();
-            data.servers[message.guild.id];
+            data.servers = [];
             data.servers[message.guild.id] = {};
             db.JSON(data);
             db.sync();
         };
         } catch (error) {
             data = db.JSON();
-            data.servers[message.guild.id];
+            data.servers = [];
             data.servers[message.guild.id] = {};
             db.JSON(data);
             db.sync();

@@ -68,13 +68,19 @@ bot.on(`messageCreate`, (message: Message) => {
         var data = db.JSON();
         //get the prefix from the db
         //var prefix = data[message.guild.id].prefix;
+        try {
         if (db.get("servers").message.guild.id == undefined) {
             data = db.JSON();
             data.servers[message.guild.id] = {};
             db.JSON(data);
             db.sync();
-        }
-
+        };
+        } catch (error) {
+            data = db.JSON();
+            data.servers[message.guild.id] = {};
+            db.JSON(data);
+            db.sync();
+        };
         console.log(db.get("servers")[message.guild.id].prefix);
         if (db.get("servers")[message.guild.id].prefix == undefined) {
                 console.log("prefix is undefined");

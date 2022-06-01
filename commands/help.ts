@@ -11,8 +11,6 @@ export var permissions = ["ALL"];
 export function run(bot, message, db) {
     //define embed
     var embed = new MessageEmbed();
-    //array to hold the commands
-    let cmds:any = [];
     //syncronously read the files in the commands folder and push them to the array
     //console.log(fs.readdirSync(`./`));
     fs.readdirSync("./build/commands")

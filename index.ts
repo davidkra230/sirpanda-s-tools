@@ -89,7 +89,7 @@ bot.on(`messageCreate`, async (message: Message) => {
                 }
             }
                 db.read();
-                db.data.servers[message.guild.id].prefix = db.data.botconfig.prefix
+                db.data.servers[message.guild.id].prefix = db.data.botconfig.prefix;
                 db.write();
                 //get the prefix from the db
                 var prefix = db.data.servers[message.guild.id].prefix;
@@ -104,7 +104,7 @@ bot.on(`messageCreate`, async (message: Message) => {
         try {
 
             //check if the command is in the commands folder
-            var command = await import(`./commands/${message.content.split(" ")[0].slice(`${cprefix}`.length).toLowerCase()}.js`)
+            var command = await import(`./commands/${message.content.split(" ")[0].slice(`${cprefix}`.length).toLowerCase()}.js`);
             //check if the command has maintener required permissions
              if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.data.botconfig.maintainers.join().includes(message.author.id.toString())) {
                 //run the command

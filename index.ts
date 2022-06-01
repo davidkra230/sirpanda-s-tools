@@ -7,11 +7,12 @@ import * as Discord from "discordx";
 //import message and intents from discord.js
 import { Message, Intents, Client } from "discord.js";
 //require dotenv
-require("dotenv").config();
-//require the json db
-var jsondb = require("simple-json-db");
-//create the db
-var db = new jsondb("./data.json");
+import * as dotenv from "dotenv";
+dotenv.config();
+//import lowdb because simple-json-db is a pain in the ass
+import { JSONFileSync, LowSync } from "lowdb";
+//make the database
+const db = new LowSync(new JSONFileSync<any>("./data.json"));
 //import reflect-metadata
 import "reflect-metadata";
 //import the discordx library
@@ -31,83 +32,81 @@ const bot = new Discord.Client({
 bot.on(`ready`, () => {
     console.log(`Ready as: ` + bot.user.tag + `!`);
     //start web interface
-    require("./webserver/server.js").server(bot);
+    import("./webserver/server.js").then(server => {
+        server.server(bot);
+    });
     //no botconfig?
-    if (!db.has("botconfig")) {
+    db.read();
+    if (db.data.botconfig == null || db.data.botconfig == undefined) {
         //create.
-        db.set("botconfig", {})
+        db.data.botconfig = {};
+        db.write();
     }
-        
+    
     //sets the prefix to "!"
-    if (!db.has("botconfig").prefix) {
-        db.set("botconfig", {"prefix": "!"});
+    db.read();
+    if (db.data.botconfig.prefix == null || db.data.botconfig.prefix == undefined) {
+        db.data.botconfig.push({"prefix": "!"});
+        db.write();
     }
     //set the activity and activity type to the one in the db or default to playing and "bots be like:" if there is no activity in the db
-        if (db.has("botconfig").activity == undefined || db.get("botconfig").activityType == undefined) {
-        var data = db.JSON()
-        data.botconfig.activity = "bots be like:";
-        data.botconfig.activityType = "PLAYING";
-        db.JSON(data);
-        db.sync();
-        bot.user.setActivity(db.get("botconfig").activity, { type: db.get("botconfig").activityType});
+        db.read();
+        if (db.data.botconfig.activity == undefined || db.data.botconfig.activityType == undefined) {
+        db.data.botconfig.activity = "bots be like:";
+        db.data.botconfig.activityType = "PLAYING";
+        db.write();
+        bot.user.setActivity(db.data.botconfig.activity, { type: db.data.botconfig.activityType});
         }
         //maintainers
-        if (!db.get("botconfig").maintainers == undefined) {return}
-            var data = db.JSON();
-            data.botconfig.maintainers = [];
-            data.botconfig.maintainers.push("652699312631054356");
-            db.JSON(data);
-            db.sync();
+        db.read();
+        if (!db.data.botconfig.maintainers == undefined) {return}
+            db.data.botconfig.maintainers = [];
+            db.data.botconfig.maintainers.push("652699312631054356");
+            db.write();
 }
 );
 
 //when a message is received it checks if the message is a command
-bot.on(`messageCreate`, (message: Message) => {
+bot.on(`messageCreate`, async (message: Message) => {
     //print the message
     console.log(`something happened: ${message.content}`);
-        var data = db.JSON();
+        db.read();
         //get the prefix from the db
         //var prefix = data[message.guild.id].prefix;
-        try {
-        if (db.get("servers").message.guild.id == undefined) {
-            data = db.JSON();
-            data.servers = [];
-            data.servers[message.guild.id] = {};
-            db.JSON(data);
-            db.sync();
+        if (db.data.servers[message.guild.id] == undefined || db.data.servers[message.guild.id] == null) {
+            db.data.servers[message.guild.id] = {};
+            db.write();
         };
-        } catch (error) {
-            data = db.JSON();
-            data.servers = [];
-            data.servers[message.guild.id] = {};
-            db.JSON(data);
-            db.sync();
-        };
-        console.log(db.get("servers")[message.guild.id].prefix);
-        if (db.get("servers")[message.guild.id].prefix == undefined) {
+        db.read();
+        console.log(db.data.servers[message.guild.id].prefix);
+        if (db.data.servers[message.guild.id].prefix == undefined || db.data.servers[message.guild.id].prefix == null) {
                 console.log("prefix is undefined");
                 //if there is an error set the prefix to "!"
-                if (!db.has("servers")[message.guild.id]) {
-                    db.set("servers", {[message.guild.id]: {}});
+                db.read();
+                if (!db.data.servers[message.guild.id]) {
+                    db.data.servers.push({[message.guild.id]: {}});
+                    db.write();
                 }
             }
-                db.set("servers", {[message.guild.id]: {"prefix": db.get("botconfig").prefix}}) 
+                db.read();
+                db.data.servers[message.guild.id].prefix = db.data.botconfig.prefix
+                db.write();
                 //get the prefix from the db
-                var prefix = db.get("servers")[message.guild.id].prefix;
+                var prefix = db.data.servers[message.guild.id].prefix;
     //if the message starts with the prefix specific to the one for the guild id or the ping of the bot 
     if (message.content.startsWith(prefix) || message.content.startsWith(`<@${bot.user.id}>`)) {
             //if the prefix is same as the ping of the bot
-            if (message.content.startsWith(prefix)) {var cprefix = `${prefix}`;}
-            if (message.content.startsWith(`<@${bot.user.id}>`)) {var cprefix = `<@${bot.user.id}>`;}
+            if (message.content.startsWith(prefix)) {var cprefix = `${prefix}`};
+            if (message.content.startsWith(`<@${bot.user.id}>`)) {var cprefix = `<@${bot.user.id}>`};
         console.log(`prefix: ${cprefix}`);
         //check if the command exists in the commands folder by trying to require it
         //and if the user has the permission to use the command or is a maintainer then run the command
         try {
 
             //check if the command is in the commands folder
-            var command = require(`./commands/${message.content.split(" ")[0].slice(`${cprefix}`.length).toLowerCase()}.js`);
+            var command = await import(`./commands/${message.content.split(" ")[0].slice(`${cprefix}`.length).toLowerCase()}.js`)
             //check if the command has maintener required permissions
-             if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.get("botconfig").maintainers.join().includes(message.author.id.toString())) {
+             if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.data.botconfig.maintainers.join().includes(message.author.id.toString())) {
                 //run the command
                 command.run(bot, message, db);
             
@@ -117,8 +116,8 @@ bot.on(`messageCreate`, (message: Message) => {
             }
         } catch (error:any) {
             //send a message to the channel that the command does not exist
-          if (error.toString().startsWith("Error: Cannot find module") == true) {console.log(error); return};
-            message.channel.send(`error:\n${error}\n(report this to david!)`);
+          if (error.toString().startsWith("Error: Cannot find module") == true) {console.log(error.stack); return};
+            message.channel.send(`error:\n${error.stack}\n(report this to david!)`);
         }
 
     }

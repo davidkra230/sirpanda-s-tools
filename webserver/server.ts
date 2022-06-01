@@ -1,10 +1,10 @@
 //express
-var express = require('express');
+import express from 'express';
 var app = express();
 var port = process.env.PORT || 3000;
 
 //body parser
-var bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

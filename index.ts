@@ -46,7 +46,7 @@ bot.on(`ready`, () => {
     //sets the prefix to "!"
     db.read();
     if (db.data.botconfig.prefix == null || db.data.botconfig.prefix == undefined) {
-        db.data.botconfig.push({"prefix": "!"});
+        db.data.botconfig.prefix = "!";
         db.write();
     }
     //set the activity and activity type to the one in the db or default to playing and "bots be like:" if there is no activity in the db
@@ -73,21 +73,37 @@ bot.on(`messageCreate`, async (message: Message) => {
         db.read();
         //get the prefix from the db
         //var prefix = data[message.guild.id].prefix;
+        try {
         if (db.data.servers[message.guild.id] == undefined || db.data.servers[message.guild.id] == null) {
             db.data.servers[message.guild.id] = {};
             db.write();
         };
+    } catch (error) {
         db.read();
+        db.data.servers = {};
+        db.data.servers[message.guild.id] = {};
+        db.write();
+    }
+    try {
         console.log(db.data.servers[message.guild.id].prefix);
         if (db.data.servers[message.guild.id].prefix == undefined || db.data.servers[message.guild.id].prefix == null) {
                 console.log("prefix is undefined");
                 //if there is an error set the prefix to "!"
                 db.read();
                 if (!db.data.servers[message.guild.id]) {
-                    db.data.servers.push({[message.guild.id]: {}});
+                    db.data.servers[message.guild.id] = {};
                     db.write();
                 }
             }
+    } catch (error) {
+        console.log("prefix is undefined");
+        //if there is an error set the prefix to "!"
+        db.read();
+        if (!db.data.servers[message.guild.id]) {
+            db.data.servers[message.guild.id] = db.data.botconfig;
+            db.write();
+        }
+    }
                 db.read();
                 db.data.servers[message.guild.id].prefix = db.data.botconfig.prefix;
                 db.write();

@@ -2,6 +2,8 @@
 //dotenv is used to store the token in a .env file
 //the bot uses simple-json-db to store the data
 
+//fs
+import * as fs from 'fs';
 //import the discordx library
 import * as Discord from "discordx";
 //import message and intents from discord.js
@@ -35,6 +37,11 @@ bot.on(`ready`, () => {
     import("./webserver/server.js").then(server => {
         server.server(bot);
     });
+    //no database?
+    if (!db.data) {
+        //fs to create data.json
+        fs.writeFileSync("./data.json", "{}");
+    }
     //no botconfig?
     db.read();
     if (db.data.botconfig == null || db.data.botconfig == undefined) {
@@ -51,20 +58,31 @@ bot.on(`ready`, () => {
     }
     //set the activity and activity type to the one in the db or default to playing and "bots be like:" if there is no activity in the db
         db.read();
+    try {
         if (db.data.botconfig.activity == undefined || db.data.botconfig.activityType == undefined) {
         db.data.botconfig.activity = "bots be like:";
         db.data.botconfig.activityType = "PLAYING";
         db.write();
         bot.user.setActivity(db.data.botconfig.activity, { type: db.data.botconfig.activityType});
         }
+
         //maintainers
         db.read();
         if (!db.data.botconfig.maintainers == undefined) {return}
             db.data.botconfig.maintainers = [];
             db.data.botconfig.maintainers.push("652699312631054356");
             db.write();
-}
-);
+
+} catch (error) { 
+    if (db.data.botconfig.activity == undefined || db.data.botconfig.activityType == undefined) {
+        db.data.botconfig.activity = "bots be like:";
+        db.data.botconfig.activityType = "PLAYING";
+        db.write();
+        bot.user.setActivity(db.data.botconfig.activity, { type: db.data.botconfig.activityType});
+        db.data.botconfig.maintainers = [];
+        db.data.botconfig.maintainers.push("652699312631054356");
+        db.write();
+}}});
 
 //when a message is received it checks if the message is a command
 bot.on(`messageCreate`, async (message: Message) => {

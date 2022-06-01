@@ -5,7 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "node build/index.js", //assume prod
+    "start": "node build/index.js",
     "start:dev": "ts-node-dev index.ts",
     "start:prod": "node build/index.js",
     "start:proddev": "node-dev build/index.js",

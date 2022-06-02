@@ -38,7 +38,7 @@ bot.on(`ready`, () => {
         server.server(bot);
     });
     //no database?
-    if (!db.data) {
+    try {!fs.readFileSync("./data.json")} catch {
         //fs to create data.json
         fs.writeFileSync("./data.json", "{}");
     }

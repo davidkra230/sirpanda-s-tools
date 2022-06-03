@@ -42,7 +42,7 @@ bot.on(`ready`, () => {
         
     //sets the prefix to "!"
     db.read();
-    if (!db.data.botconfig.prefix == undefined) {
+    if (db.data.botconfig.prefix == undefined) {
         db.data.botconfig.prefix = "!";
         db.write();
     };
@@ -69,12 +69,17 @@ bot.on(`messageCreate`, (message: Message) => {
     console.log(`something happened: ${message.content}`);
         //get the prefix from the db
         //var prefix = data[message.guild.id].prefix;
+        db.read();
         if (db.data.servers[message.guild.id] == undefined) {
                 db.data.servers[message.guild.id] = {};
+                db.write();
         };
+        db.read();
         if (db.data.servers[message.guild.id].prefix == undefined) {
-                db.data.servers[message.guild.id].prefix = db.data.botconfig.prefix
-            }
+                db.data.servers[message.guild.id].prefix = db.data.botconfig.prefix;
+                db.write();
+            };
+                db.read();
                 //get the prefix from the db
                 var prefix = db.data.servers[message.guild.id].prefix;
     //if the message starts with the prefix specific to the one for the guild id or the ping of the bot 

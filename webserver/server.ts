@@ -1,15 +1,15 @@
 //express
-import express from 'express';
+var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
 
 //body parser
-import bodyParser from 'body-parser';
+var bodyParser = require("body-Parser")
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //the server function
-export function server(bot) {
+exports.server = (bot) => {
     //the single route
     app.get('/*', (req, res) => {
         //send the response

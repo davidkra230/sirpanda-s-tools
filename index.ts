@@ -31,7 +31,7 @@ const bot = new Discord.Client({
 bot.on(`ready`, () => {
     console.log(`Ready as: ` + bot.user.tag + `!`);
     //start web interface
-    require(__dirname + "/webserver/server.js").server(bot);
+    require("./webserver/server.js").server(bot);
     //no db?
     db.read();
     if (db.data == null) {

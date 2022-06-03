@@ -1,9 +1,9 @@
 //permissions required to use the command
-export var permissions = ["ALL"];
+exports.permissions = ["ALL"];
 //the description of the command
-export var description = "get a pong with latency";
+exports.description = "get a pong with latency";
 //message embed
-var { MessageEmbed } = await import('discord.js');
+var { MessageEmbed } = require('discord.js');
 var embed = new MessageEmbed();
 
 //the run function

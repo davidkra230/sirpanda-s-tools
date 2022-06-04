@@ -88,6 +88,7 @@ bot.on(`ready`, async () => {
 
 bot.on(`interactionCreate`, interaction => {
     if (interaction.isCommand()) {
+        interaction.deferReply();
         require(`./commands/${interaction.command.name}.js`).run(bot, interaction, db, true);
     }
 });

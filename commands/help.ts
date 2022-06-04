@@ -3,10 +3,16 @@
 var fs = require('fs');
 //define discord.js
 var { MessageEmbed } = require('discord.js');
+//define slash command builder
+const { SlashCommandBuilder } = require('@discordjs/builders');
 //set description
 exports.description = "get help";
 //set permissions
 exports.permissions = ["ALL"];
+//set data
+exports.data = new SlashCommandBuilder()
+	.setName('help')
+	.setDescription(exports.description)
 
 //run function
 exports.run = (bot, message, db) => {

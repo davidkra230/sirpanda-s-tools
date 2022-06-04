@@ -5,9 +5,16 @@
 //import the discordx library
 import * as Discord from "discordx";
 //import message and intents from discord.js
-import { Message, Intents, Client } from "discord.js";
+import { Message, Intents, Client, Interaction } from "discord.js";
 //require dotenv
 require("dotenv").config();
+//fs
+import * as fs from "fs";
+//rest with discord.js
+var { REST } = require("@discordjs/rest");
+var rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
+//routes
+var { Routes } = require('discord-api-types/v9');
 //lowdb
 import { LowSync, JSONFileSync } from 'lowdb'
 //create the db
@@ -28,7 +35,7 @@ const bot = new Discord.Client({
 });
 
 //print something when the bot is ready and sets the activity and activity type to the one in the db
-bot.on(`ready`, () => {
+bot.on(`ready`, async () => {
     console.log(`Ready as: ` + bot.user.tag + `!`);
     //start web interface
     require("./webserver/server.js").server(bot);
@@ -60,8 +67,30 @@ bot.on(`ready`, () => {
             db.data.botconfig.maintainers.push("652699312631054356");
             db.write();
         };
-}
-);
+        //register slash commands with discord
+        console.log(bot.user.id);
+        console.log("registering slash commands...");
+        var cmds = [];
+        fs.readdirSync(__dirname + "/commands/").forEach(function(file:any) {
+            if (!file.endsWith(".js")) {return};
+            cmds.push(require(`./commands/${file}`).data.toJSON());
+        });
+        // cmds = []
+        // db.read();
+        // for (var [key, value] of Object.entries(db.data.servers)) {
+        //     bot.application.commands.set(cmds, key)
+        // };
+        // console.log("done.");
+        console.log("doing global commands...");
+        bot.application.commands.set(cmds)
+        console.log("done.");
+});
+
+bot.on(`interactionCreate`, interaction => {
+    if (interaction.isCommand()) {
+        require(`./commands/${interaction.command.name}.js`).run(bot, interaction, db, true);
+    }
+});
 
 //when a message is received it checks if the message is a command
 bot.on(`messageCreate`, (message: Message) => {
@@ -96,7 +125,7 @@ bot.on(`messageCreate`, (message: Message) => {
             //check if the command has maintener required permissions
              if (message.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.data.botconfig.maintainers.join().includes(message.author.id.toString())) {
                 //run the command
-                command.run(bot, message, db);
+                command.run(bot, message, db, false);
             
             } else {
                 //send a message to the channel that the user does not have the permission to use the command

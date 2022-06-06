@@ -1,6 +1,6 @@
 //a bot for discord written in typescript using the discordx library with a web... nah, not much at least.
 //dotenv is used to store the token in a .env file
-//the bot uses simple-json-db to store the data
+//the bot uses lowdb to store the data
 
 //import the discordx library
 import * as Discord from "discordx";

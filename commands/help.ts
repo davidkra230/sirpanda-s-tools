@@ -27,7 +27,7 @@ exports.run = async (bot, message, db, isSlashCommand) => {
         //if the file does not end with .js then return
         if (!file.endsWith(".js")) {return};
         //check if the command is hidden and if it is, return.
-        if (require(file).hidden = true) {return};
+        if (require(`${__dirname}/${file}`).hidden == true) {return};
         //push the file split by "." to the array
         cmds.push(file.split(".")[0]);
     });

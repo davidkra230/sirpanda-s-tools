@@ -7,7 +7,7 @@ exports.hidden = true;
 //embeds
 var { MessageEmbed } = require("discord.js");
 //slash command profile
-var { SlashCommandBuilder } = require("discord.js")
+var { SlashCommandBuilder } = require("@discord.js/builders")
 exports.data = new SlashCommandBuilder()
 .setName("hiddencommandtest")
 .setDescription(exports.description)

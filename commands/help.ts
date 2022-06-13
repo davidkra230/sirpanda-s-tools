@@ -1,4 +1,3 @@
-
 //define fs
 var fs = require('fs');
 //define discord.js
@@ -9,13 +8,15 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 exports.description = "get help";
 //set permissions
 exports.permissions = ["ALL"];
+//is the command hidden?
+exports.hidden = false
 //set data
 exports.data = new SlashCommandBuilder()
 	.setName('help')
 	.setDescription(exports.description)
 
 //run function
-exports.run = (bot, message, db) => {
+exports.run = async (bot, message, db, isSlashCommand) => {
     //define embed
     var embed = new MessageEmbed();
     //array to hold the commands
@@ -25,6 +26,8 @@ exports.run = (bot, message, db) => {
     .forEach(function(file:any) {
         //if the file does not end with .js then return
         if (!file.endsWith(".js")) {return};
+        //check if the command is hidden and if it is, return.
+        if (require(file).hidden = true) {return};
         //push the file split by "." to the array
         cmds.push(file.split(".")[0]);
     });

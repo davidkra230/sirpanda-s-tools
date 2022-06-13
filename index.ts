@@ -72,7 +72,11 @@ bot.on(`ready`, async () => {
         console.log("registering slash commands...");
         var cmds = [];
         fs.readdirSync(__dirname + "/commands/").forEach(function(file:any) {
+            //make sure it's javascript and not something like a type def
             if (!file.endsWith(".js")) {return};
+            //basic functionality of hidden commands, return if hidden.
+            if (require(`./commands/${file}`).hidden == true) {return};
+            //then finally, we add the command to the list
             cmds.push(require(`./commands/${file}`).data.toJSON());
         });
         // cmds = []
@@ -81,13 +85,19 @@ bot.on(`ready`, async () => {
         //     bot.application.commands.set(cmds, key)
         // };
         // console.log("done.");
+        
+        //log this for "debugging" purposes
         console.log("doing global commands...");
+        //can't forget setting the commands :P
         bot.application.commands.set(cmds)
+        //add a little "done." also for debugging.
         console.log("done.");
 });
 
 bot.on(`interactionCreate`, interaction => {
+    //check if command
     if (interaction.isCommand()) {
+        //require the command with the paramaters: bot instance, the interaction as the message, the db, and finally "true" for from slash command
         require(`./commands/${interaction.command.name}.js`).run(bot, interaction, db, true);
     }
 });

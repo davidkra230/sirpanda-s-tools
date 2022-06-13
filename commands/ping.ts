@@ -2,6 +2,8 @@
 exports.permissions = ["ALL"];
 //the description of the command
 exports.description = "get a pong with latency";
+//is the command hidden?
+exports.hidden = false
 //define slash command builder
 const { SlashCommandBuilder } = require('@discordjs/builders');
 //the data of the command
@@ -13,7 +15,7 @@ var { MessageEmbed } = require('discord.js');
 var embed = new MessageEmbed();
 
 //the run function
-export function run(bot, message, db, isSlashCommand) {
+exports.run = async (bot, message, db, isSlashCommand) => {
     //send a message to the channel that the bot is pinging with the latency
     embed.setTitle("Pong! :ping_pong:");
     embed.setDescription(`Latency: ${bot.ws.ping}ms`);

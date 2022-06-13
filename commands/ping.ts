@@ -5,7 +5,7 @@ exports.description = "get a pong with latency";
 //is the command hidden?
 exports.hidden = false
 //define slash command builder
-const { SlashCommandBuilder } = require('@discordjs/builders');
+var { SlashCommandBuilder } = require('@discordjs/builders');
 //the data of the command
 exports.data = new SlashCommandBuilder()
     .setName('ping')

@@ -20,9 +20,9 @@ exports.run = async (bot, message, db, isSlashCommand) => {
     embed.setTitle("Pong! :ping_pong:");
     embed.setDescription(`Latency: ${bot.ws.ping}ms`);
     if (isSlashCommand) {
-        embed.footer = { text: `Requested by <@!${message.user.id}>`, iconURL: message.user.avatarURL() };
+        embed.footer = { text: `Requested by: <@!${message.user.id}>`, iconURL: message.user.avatarURL() };
     } else {
-        embed.footer = { text: `Requested by <@!${message.author.id}>`, iconURL: message.author.avatarURL() };
+        embed.footer = { text: `Requested by: <@!${message.author.id}>`, iconURL: message.author.avatarURL() };
     };
     message.reply({embeds: [embed]});
 };

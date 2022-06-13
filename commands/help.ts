@@ -38,7 +38,13 @@ exports.run = async (bot, message, db, isSlashCommand) => {
     for (let cmd of cmds) {
         //add fields to the embed
         embed.addFields({ name: cmd, value: require(`${__dirname}/${cmd}.js`).description });
-    };  
+    };
+    //add a lil "requested by" footer
+    if (isSlashCommand) {
+        embed.footer = { text: `Requested by: <@!${message.user.id}>`, iconURL: message.user.avatarURL() };
+    } else {
+        embed.footer = { text: `Requested by: <@!${message.author.id}>`, iconURL: message.author.avatarURL() };
+    };
     //reply with the embed
     message.reply({embeds: [embed]});
 };

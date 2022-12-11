@@ -18,14 +18,6 @@ exports.server = (bot) => {
     );
     app.post("/refresh", async (req, res) => {
     console.log("repl.deploy" + req.body + req.headers.get("Signature"))
-
-    const result: {
-        body: string
-        status: number
-    } = JSON.parse((await getStdinLine())!)
-
-    await res.setStatus(result.status).end(result.body)
-    console.log("repl.deploy-success")
     })
     //start the server
     app.listen(port, () => {

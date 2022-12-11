@@ -14,8 +14,19 @@ exports.server = (bot) => {
     app.get('/', (req, res) => {
         //send the response
         res.send(`running as: ${bot.user.tag}<br><a href="https://discord.com/api/oauth2/authorize?client_id=727368613144821802&permissions=8&scope=bot%20applications.commands">add to server<\a>`);
-    }
-);
+      }
+    );
+    app.post("/refresh", async (req, res) => {
+    console.log("repl.deploy" + req.body + req.headers.get("Signature"))
+
+    const result: {
+        body: string
+        status: number
+    } = JSON.parse((await getStdinLine())!)
+
+    await res.setStatus(result.status).end(result.body)
+    console.log("repl.deploy-success")
+    })
     //start the server
     app.listen(port, () => {
         console.log(`listening on port ${port}`);

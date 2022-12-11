@@ -17,6 +17,7 @@ exports.server = (bot) => {
       }
     );
     app.post("/refresh", async (req, res) => {
+      console.log("rcved")
       console.log("repl.deploy" + JSON.stringify(req.body) + req.header("signature"));
     });
     //start the server

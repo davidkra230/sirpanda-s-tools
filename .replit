@@ -1,4 +1,4 @@
-run = "npm run start:prod"
+run = "./repl.deploy npm run start:proddev"
 
 [env]
 XDG_CONFIG_HOME = "/home/runner/.config"

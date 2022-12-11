@@ -17,7 +17,7 @@ exports.server = (bot) => {
       }
     );
     app.post("/refresh", async (req, res) => {
-    console.log("repl.deploy"+req.body.toString()+req.header("Signature"));
+    console.log("repl.deploy"+JSON.stringify(req.body)+req.header("Signature"));
     })
     //start the server
     app.listen(port, () => {

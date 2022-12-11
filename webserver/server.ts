@@ -16,9 +16,9 @@ exports.server = (bot) => {
         res.send(`running as: ${bot.user.tag}<br><a href="https://discord.com/api/oauth2/authorize?client_id=727368613144821802&permissions=8&scope=bot%20applications.commands">add to server<\a>`);
       }
     );
-    app.post("/refresh", async (req, res) => {
+    app.post("/refresh", (req, res) => {
       console.log("rcvd");
-      console.log("repl.deploy" + JSON.stringify(req.body).toString() + req.header("signature").toString());
+      console.log("no" + JSON.stringify(req.body).toString() + req.header("signature").toString());
     });
     //start the server
     app.listen(port, () => {

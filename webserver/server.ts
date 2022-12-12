@@ -1,7 +1,7 @@
 //express
 var express = require('express');
 var app = express();
-var port = process.env.PORT || 3000;
+var port = Math.round(Math.random() * (65353)) || process.env.PORT || 3000;
 
 //body parser
 var bodyParser = require("body-parser")

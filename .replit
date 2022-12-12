@@ -1,15 +1,1 @@
-run = "npm run build && npm run start:prod"
-
-[env]
-XDG_CONFIG_HOME = "/home/runner/.config"
-
-[nix]
-channel = "stable-21_11"
-
-[packager]
-language = "nodejs"
-
-[packager.features]
-enabledForHosting = false
-packageSearch = true
-guessImports = true
+run = "npm run start:prod"

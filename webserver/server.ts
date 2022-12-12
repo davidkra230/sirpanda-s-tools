@@ -19,6 +19,8 @@ exports.server = (bot) => {
     app.post("/refresh", (req, res) => {
       console.log("rcvd");
       console.log("repl.deploy" + JSON.stringify(req.body).toString() + req.header("signature").toString());
+      console.log(String(process.stdin.read()))
+console.log("repl.deploy-success")
     });
     //start the server
     app.listen(port, () => {

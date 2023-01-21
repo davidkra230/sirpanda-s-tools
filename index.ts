@@ -97,10 +97,23 @@ bot.on(`ready`, async () => {
 bot.on(`interactionCreate`, interaction => {
     //check if command
     if (interaction.isCommand()) {
-        //require the command with the paramaters: bot instance, the interaction as the message, the db, and finally "true" for from slash command
-        require(`./commands/${interaction.command.name}.js`).run(bot, interaction, db, true);
+        try {
+            //require command
+            command = require(`./commands/${interaction.command.name}.js`);
+            //check if the command has maintener required permissions
+             if (interaction.member.permissions.toArray().includes(command.permissions.join()) || command.permissions.includes("ALL") || db.data.botconfig.maintainers.join().includes(interaction.member.id.toString())) {
+                //run the command
+                command.run(bot, message, db, true);
+            
+            } else {
+                //send a message to the channel that the user does not have the permission to use the command
+                interaction.channel.send(`You do not have the permission to use this command!\nYou need the following permissions: ${command.permissions.join(", ")}`);
+            }
+        } catch (error:any) {
+            interaction.channel.send(`error:\n${error}\n(report this to david!)`);
+        }
     }
-});
+);
 
 //when a message is received it checks if the message is a command
 bot.on(`messageCreate`, (message: Message) => {
